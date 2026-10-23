@@ -1,0 +1,77 @@
+name: Autograding Tests
+
+on:
+  push:
+  workflow_dispatch:
+  repository_dispatch:
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pytest
+        run: pip install pytest
+
+      - name: Header comments
+        id: header-comments
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Header comments
+          setup-command: ""
+          command: pytest test_while_loop_make.py::test_header_comments
+          timeout: 5
+          max-score: 10
+
+      - name: All combos
+        id: all-combos
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: All combos
+          setup-command: ""
+          command: pytest test_while_loop_make.py::test_all_combos
+          timeout: 5
+          max-score: 30
+
+      - name: Invalid move
+        id: invalid-move
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Invalid move
+          setup-command: ""
+          command: pytest test_while_loop_make.py::test_invalid_move
+          timeout: 5
+          max-score: 30
+
+      - name: Counters
+        id: counters
+        uses: classroom-resources/autograding-command-grader@v1
+        with:
+          test-name: Counters
+          setup-command: ""
+          command: pytest test_while_loop_make.py::test_counters
+          timeout: 5
+          max-score: 30
+
+      - name: Autograding Reporter
+        uses: classroom-resources/autograding-grading-reporter@v1
+        env:
+          HEADER-COMMENTS_RESULTS: "${{ steps.header-comments.outputs.result }}"
+          ALL-COMBOS_RESULTS: "${{ steps.all-combos.outputs.result }}"
+          INVALID-MOVE_RESULTS: "${{ steps.invalid-move.outputs.result }}"
+          COUNTERS_RESULTS: "${{ steps.counters.outputs.result }}"
+        with:
+          runners: header-comments,all-combos,invalid-move,counters
