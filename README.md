@@ -1,5 +1,5 @@
 ## Setup
-1. Git Clone this repository in your Make Folder
+1. Git Clone this repository in your Unit 2 Folder
 2. Create a file called while_loop_make.py 
 
 ## Instructions
